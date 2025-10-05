@@ -1,5 +1,14 @@
 #!/bin/sh
 . "$(dirname "$0")/_/husky.sh"
+set -e
 
-npx prettier --check .
-npx eslint . --fix
+echo "🔍 Running pre-commit checks..."
+
+# 1️⃣ Run lint-staged to auto-fix ESLint & Prettier only on staged files
+npx lint-staged
+
+# 2️⃣ Run all Jest tests
+echo "🧪 Running all Jest tests..."
+npx jest --passWithNoTests
+
+echo "✅ Pre-commit checks complete!"
