@@ -4,6 +4,10 @@ import prettierPlugin from 'eslint-plugin-prettier';
 import prettierConfig from 'eslint-config-prettier';
 
 export default [
+  // Global ignores to keep tooling away from generated artifacts
+  {
+    ignores: ['node_modules/**', 'services/**/generated/**', '**/generated/**'],
+  },
   {
     files: ['**/*.{js,mjs,cjs}'],
     ignores: [
@@ -40,7 +44,8 @@ export default [
       'comma-dangle': 'off',
       semi: ['error', 'always'],
       quotes: ['error', 'single', { avoidEscape: true }],
-      indent: ['error', 2],
+      // Defer indentation to Prettier to avoid conflicts
+      indent: 'off',
       'max-len': ['error', { code: 120, ignoreUrls: true }],
       camelcase: ['error', { properties: 'never' }],
       'no-multiple-empty-lines': ['error', { max: 1 }],

@@ -5,11 +5,12 @@ import helmet from 'helmet';
 import morgan from 'morgan';
 import compression from 'compression';
 import rateLimit from 'express-rate-limit';
+import logger from './shared/utils/logger.js';
 
 dotenv.config();
 const app = express();
 
-// Security middleware
+// Security middleware: minimal CSP and standard protections
 app.use(
   helmet({
     contentSecurityPolicy: {
@@ -23,7 +24,7 @@ app.use(
   })
 );
 
-// CORS configuration
+// CORS configuration: configure allowed origins via env (comma-separated)
 app.use(
   cors({
     origin: process.env.ALLOWED_ORIGINS?.split(',') || [
@@ -33,7 +34,7 @@ app.use(
   })
 );
 
-// Rate limiting
+// Rate limiting: basic IP-based rate limiting for all routes
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
   max: 100, // limit each IP to 100 requests per windowMs
@@ -49,7 +50,14 @@ app.use(limiter);
 app.use(compression());
 
 // Logging middleware
-app.use(morgan('combined'));
+app.use(
+  morgan('combined', {
+    stream: {
+      write: msg =>
+        logger.http ? logger.http(msg.trim()) : logger.info(msg.trim()),
+    },
+  })
+);
 
 // Body parsing middleware
 app.use(express.json({ limit: '10mb' }));
@@ -67,9 +75,9 @@ app.get('/', (req, res) => {
   res.send('hey there from backend');
 });
 
-// Global error handler
+// Global error handler (kept in root app for non-user-service endpoints)
 app.use((err, req, res, _next) => {
-  console.error(err.stack);
+  logger.error('Unhandled error', { stack: err.stack, message: err.message });
   res.status(500).json({
     error: 'Something went wrong!',
     message:
@@ -89,5 +97,5 @@ app.use((req, res) => {
 const PORT = process.env.PORT || 5000;
 
 app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
+  logger.info(`Server running on port ${PORT}`);
 });

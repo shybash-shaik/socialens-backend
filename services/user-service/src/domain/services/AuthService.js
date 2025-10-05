@@ -7,9 +7,10 @@ import {
 import { sha256 } from '../../utils/token.js';
 import { UnauthorizedError, NotFoundError } from '../errors/AppError.js';
 
+// Orchestrates user authentication and refresh token lifecycle
 export class AuthService {
   constructor({ userRepository, refreshTokenRepository }) {
-    // Initialize repositories for user and refresh token data access
+    // Data access adapters are injected to keep domain logic decoupled from persistence
     this.userRepository = userRepository;
     this.refreshTokenRepository = refreshTokenRepository;
   }
@@ -28,7 +29,7 @@ export class AuthService {
     if (!ok) throw UnauthorizedError('Invalid credentials');
 
     // Generate JWT access and refresh tokens
-    // Note: TOTP (2FA) can be added in a future step if enabled
+    // Note: TOTP (2FA) can be added later by gating access token issuance
     const accessToken = signAccessToken({
       sub: user.id,
       role: user.role,
@@ -36,7 +37,7 @@ export class AuthService {
     });
     const refreshToken = signRefreshToken({ sub: user.id });
 
-    // Store refresh token hash with metadata in repository
+    // Persist refresh token hash (not the token itself) for rotation and revocation
     await this.refreshTokenRepository.create({
       userId: user.id,
       tokenHash: sha256(refreshToken),
@@ -100,7 +101,7 @@ export class AuthService {
   }
 
   async logout({ refreshToken }) {
-    // Revoke refresh token on logout
+    // Revoke refresh token on logout (idempotent)
     const tokenHash = sha256(refreshToken);
     const stored = await this.refreshTokenRepository.findValidByHash(tokenHash);
     if (stored) await this.refreshTokenRepository.revokeById(stored.id);
@@ -108,7 +109,7 @@ export class AuthService {
   }
 
   _ttlMs(ttlString) {
-    // Parse TTL string like "7d" or "15m" into milliseconds
+    // Parse TTL string like "7d" or "15m" into milliseconds; defaults to 7d
     const match = /^(\d+)([smhd])$/.exec(ttlString);
     if (!match) return 7 * 24 * 60 * 60 * 1000; // default 7 days
     const v = Number(match[1]);

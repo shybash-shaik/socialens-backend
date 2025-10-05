@@ -7,12 +7,13 @@ import compression from 'compression';
 import rateLimit from 'express-rate-limit';
 import authRouter from './routes/auth.js';
 import { errorHandler } from './middleware/errorHandler.js';
+import logger from '../../../shared/utils/logger.js';
 
 dotenv.config();
 
 const app = express();
 
-/* 🛡️ Security Middleware */
+/* 🛡️ Security Middleware: set CSP and standard headers */
 app.use(
   helmet({
     contentSecurityPolicy: {
@@ -26,7 +27,7 @@ app.use(
   })
 );
 
-/* 🌐 CORS Configuration */
+/* 🌐 CORS Configuration: env-driven allowlist */
 app.use(
   cors({
     origin: process.env.ALLOWED_ORIGINS?.split(',') || [
@@ -36,7 +37,7 @@ app.use(
   })
 );
 
-/* 🚦 Rate Limiting */
+/* 🚦 Rate Limiting: global IP throttling */
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
   max: 100, // limit each IP to 100 requests per window
@@ -48,7 +49,14 @@ app.use(limiter);
 
 /* ⚙️ Compression & Logging */
 app.use(compression({ threshold: 1024 }));
-app.use(morgan('dev'));
+app.use(
+  morgan('dev', {
+    stream: {
+      write: msg =>
+        logger.http ? logger.http(msg.trim()) : logger.info(msg.trim()),
+    },
+  })
+);
 
 /* 📦 Body Parser */
 app.use(express.json({ limit: '10mb' }));
@@ -83,5 +91,5 @@ app.use(errorHandler);
 /* 🚀 Start Server */
 const PORT = process.env.PORT || 5001;
 app.listen(PORT, () => {
-  console.log(`✅ Server running on port ${PORT}`);
+  logger.info(`✅ Server running on port ${PORT}`);
 });

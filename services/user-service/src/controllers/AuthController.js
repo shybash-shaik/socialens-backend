@@ -2,6 +2,7 @@ import { PrismaUserRepository } from '../adapters/repositories/PrismaUserReposit
 import { PrismaRefreshTokenRepository } from '../adapters/repositories/PrismaRefreshTokenRepository.js';
 import { AuthService } from '../domain/services/AuthService.js';
 
+// Compose controller dependencies (repositories + domain service)
 const userRepository = new PrismaUserRepository();
 const refreshTokenRepository = new PrismaRefreshTokenRepository();
 const authService = new AuthService({ userRepository, refreshTokenRepository });
