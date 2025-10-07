@@ -53,8 +53,7 @@ app.use(compression());
 app.use(
   morgan('combined', {
     stream: {
-      write: msg =>
-        logger.http ? logger.http(msg.trim()) : logger.info(msg.trim()),
+      write: msg => logger.info(msg.trim()),
     },
   })
 );

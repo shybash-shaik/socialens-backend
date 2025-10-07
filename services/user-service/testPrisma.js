@@ -1,6 +1,6 @@
 // testPrisma.js
 import prisma from './src/config/prisma.js'; // adjust the path if needed
-import logger from '../shared/utils/logger.js';
+import logger from '../../shared/utils/logger.js';
 
 async function main() {
   try {

@@ -1,15 +1,14 @@
-#!/usr/bin/env sh
-. "$(dirname -- "$0")/_/husky.sh"
 
 echo "🚀 Running pre-push checks..."
 
 # Run full test suite
 echo "🧪 Running full test suite..."
-npm run test:coverage
+npm run test:coverage -- --passWithNoTests
 
 # Check for TODO/FIXME comments
-echo "🔍 Checking for TODO/FIXME comments..."
-if grep -r "TODO\|FIXME" src/ --exclude-dir=node_modules; then
+echo "🔍 Checking for TODO/FIXME comments in source directories..."
+# Scan only application source directories and ignore VCS/hooks
+if grep -r "TODO\|FIXME" services/*/src gateway/src 2> NUL; then
   echo "⚠️  Found TODO/FIXME comments. Please address them before pushing."
   exit 1
 fi

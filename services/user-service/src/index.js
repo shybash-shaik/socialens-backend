@@ -6,6 +6,8 @@ import morgan from 'morgan';
 import compression from 'compression';
 import rateLimit from 'express-rate-limit';
 import authRouter from './routes/auth.js';
+import invitationRouter from './routes/invitations.js';
+import adminRouter from './routes/admin.js';
 import { errorHandler } from './middleware/errorHandler.js';
 import logger from '../../../shared/utils/logger.js';
 
@@ -51,10 +53,8 @@ app.use(limiter);
 app.use(compression({ threshold: 1024 }));
 app.use(
   morgan('dev', {
-    stream: {
-      write: msg =>
-        logger.http ? logger.http(msg.trim()) : logger.info(msg.trim()),
-    },
+    skip: req => req.path === '/health',
+    stream: { write: msg => logger.info(msg.trim()) },
   })
 );
 
@@ -77,6 +77,8 @@ app.get('/', (req, res) => {
 
 /* 🧩 Routes */
 app.use('/auth', authRouter);
+app.use('/invitations', invitationRouter);
+app.use('/admin', adminRouter);
 
 /* ⚠️ 404 Handler */
 app.use((req, res) => {
@@ -91,5 +93,5 @@ app.use(errorHandler);
 /* 🚀 Start Server */
 const PORT = process.env.PORT || 5001;
 app.listen(PORT, () => {
-  logger.info(`✅ Server running on port ${PORT}`);
+  logger.info(` Server running on port ${PORT}`);
 });

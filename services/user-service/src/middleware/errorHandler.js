@@ -1,5 +1,5 @@
 import { AppError } from '../domain/errors/AppError.js';
-import logger from '../../../shared/utils/logger.js';
+import logger from '../../../../shared/utils/logger.js';
 
 // Centralized error handler for the service
 // Converts domain AppError to proper HTTP responses; hides internals otherwise

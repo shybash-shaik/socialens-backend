@@ -1,4 +1,5 @@
 import { verifyPassword } from '../../utils/password.js';
+import speakeasy from 'speakeasy';
 import {
   signAccessToken,
   signRefreshToken,
@@ -15,7 +16,7 @@ export class AuthService {
     this.refreshTokenRepository = refreshTokenRepository;
   }
 
-  async loginWithPassword({ email, password, userAgent, ip }) {
+  async loginWithPassword({ email, password, userAgent, ip, otp }) {
     // Authenticate user by email and password
     const user = await this.userRepository.findByEmail(email);
     if (!user) throw UnauthorizedError('Invalid credentials');
@@ -23,17 +24,27 @@ export class AuthService {
     // Verify password hash and algorithm
     const ok = await verifyPassword(
       password,
-      user.password_hash,
-      user.password_algo
+      user.passwordHash,
+      user.passwordAlgo
     );
     if (!ok) throw UnauthorizedError('Invalid credentials');
 
+    // If TOTP is enabled, verify provided OTP before issuing tokens
+    if (user.totpEnabled) {
+      const isValidOtp = speakeasy.totp.verify({
+        secret: user.totpSecret,
+        encoding: 'base32',
+        token: otp || '',
+        window: 1,
+      });
+      if (!isValidOtp) throw UnauthorizedError('OTP_REQUIRED_OR_INVALID');
+    }
+
     // Generate JWT access and refresh tokens
-    // Note: TOTP (2FA) can be added later by gating access token issuance
     const accessToken = signAccessToken({
       sub: user.id,
       role: user.role,
-      tenantId: user.tenant_id,
+      tenantId: user.tenantId,
     });
     const refreshToken = signRefreshToken({ sub: user.id });
 
@@ -54,7 +65,7 @@ export class AuthService {
         id: user.id,
         email: user.email,
         role: user.role,
-        tenantId: user.tenant_id,
+        tenantId: user.tenantId,
       },
       tokens: { accessToken, refreshToken },
     };
@@ -81,7 +92,7 @@ export class AuthService {
     const accessToken = signAccessToken({
       sub: user.id,
       role: user.role,
-      tenantId: user.tenant_id,
+      tenantId: user.tenantId,
     });
     const newRefreshToken = signRefreshToken({ sub: user.id });
 

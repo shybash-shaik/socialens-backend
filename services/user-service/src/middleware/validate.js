@@ -8,7 +8,7 @@ export const validate = schema => (req, res, next) => {
     return res.status(422).json({
       error: 'VALIDATION_ERROR',
       message: 'Invalid request',
-      details: result.error.errors.map(e => e.message),
+      details: result.error.issues.map(e => e.message),
     });
   }
 
