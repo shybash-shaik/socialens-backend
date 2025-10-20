@@ -2,7 +2,7 @@
 
 A production-ready social media platform built with microservice architecture, featuring user management, email notifications, and API gateway.
 
-## 🌟 Features
+## Features
 
 - **Microservice Architecture**: Scalable and maintainable service separation
 - **Advanced Authentication**: JWT + TOTP (Google Authenticator) support
@@ -12,7 +12,7 @@ A production-ready social media platform built with microservice architecture, f
 - **Comprehensive Testing**: Jest test suites with coverage reporting
 - **Security First**: Rate limiting, input validation, and secure headers
 
-## 🚀 Services
+## Services
 
 ### 1. **User Service** (Port 5001)
 
@@ -54,7 +54,7 @@ Client Roles:
 - **CORS Configuration**
 - **Health Checks**
 
-## 🛠️ Technology Stack
+## Technology Stack
 
 | Component            | Technology        |
 | -------------------- | ----------------- |
@@ -69,7 +69,7 @@ Client Roles:
 | **Validation**       | Zod               |
 | **Security**         | Helmet + CORS     |
 
-## 📁 Project Structure
+## Project Structure
 
 ```
 backend/
@@ -97,7 +97,7 @@ backend/
 └── README.md
 ```
 
-## 🚀 Quick Start
+## Quick Start
 
 ### Prerequisites
 
@@ -153,7 +153,7 @@ backend/
    - **User Service**: http://localhost:5001
    - **Notification Service**: http://localhost:5004
 
-## 🔧 Development Commands
+## Development Commands
 
 ### Root Level Commands
 
@@ -173,7 +173,7 @@ npm run test          # Run service tests
 npm run test:watch    # Run tests in watch mode
 ```
 
-## 🔐 Security Features
+## Security Features
 
 - **JWT Authentication** with refresh tokens
 - **TOTP (Google Authenticator)** support
@@ -184,11 +184,11 @@ npm run test:watch    # Run tests in watch mode
 - **Helmet Security Headers**
 - **SQL Injection Prevention**
 
-## 📊 API Documentation
+## API Documentation
 
 - **Swagger UI**: http://localhost:5000/api-docs
 
-## 🧪 Testing
+## Testing
 
 ```bash
 # Run all tests
@@ -202,7 +202,7 @@ npm test
 npm run test:coverage
 ```
 
-## 📈 Monitoring & Logging
+## Monitoring & Logging
 
 - **Pino** for structured logging across all services
 - **Health checks** for all services (`/health` endpoints)
@@ -210,7 +210,7 @@ npm run test:coverage
 - **Performance monitoring** with response time tracking
 - **Log aggregation** for centralized monitoring
 
-## 🔍 API Endpoints Overview
+## API Endpoints Overview
 
 ### Authentication Endpoints
 
@@ -237,7 +237,7 @@ npm run test:coverage
 - `GET /` - Root endpoint
 - `GET /api-docs` - Swagger API documentation
 
-## 🗄️ Database Schema
+## Database Schema
 
 The application uses **Prisma ORM** with **MySQL 8.0** for data persistence. Key entities include:
 
@@ -261,7 +261,7 @@ The application uses **Prisma ORM** with **MySQL 8.0** for data persistence. Key
 - **Metadata tracking**: User agent and IP address logging
 - **Revocation**: Ability to revoke tokens for security
 
-## 🔐 Authentication & Authorization
+## Authentication & Authorization
 
 ### JWT Token Flow
 
@@ -293,7 +293,7 @@ client_admin > client_user;
 - **Validation**: Input sanitization with Zod schemas
 - **Rate Limiting**: Request throttling
 
-## 🏗️ API Architecture
+## API Architecture
 
 ### Clean Architecture Pattern
 
@@ -323,7 +323,7 @@ src/
 - **Logging**: Comprehensive error logging with stack traces
 - **Validation**: Input validation with detailed error messages
 
-## 📧 Email & Notification System
+## Email & Notification System
 
 ### Invitation Emails
 
@@ -338,7 +338,7 @@ src/
 - **Error Handling**: Robust error handling with dead letter queues
 - **Logging**: Comprehensive email delivery logging
 
-## 🔒 Security Features
+## Security Features
 
 ### Password Security
 
@@ -359,7 +359,7 @@ src/
 - **Secure Cookies**: HTTP-only, secure cookie options
 - **IP Tracking**: Optional IP address logging for security
 
-## 📝 Environment Variables
+## Environment Variables
 
 Create a `.env` file in the root directory with the following variables:
 
@@ -369,7 +369,7 @@ Create a `.env` file in the root directory with the following variables:
 - RabbitMQ configuration
 - Security settings
 
-## 🤝 Contributing
+## Contributing
 
 1. Fork the repository
 2. Create a feature branch
@@ -377,11 +377,11 @@ Create a `.env` file in the root directory with the following variables:
 4. Run tests and linting
 5. Submit a pull request
 
-## 📄 License
+## License
 
 MIT License
 
-## 🆘 Support
+## Support
 
 For support and questions:
 
