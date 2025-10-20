@@ -1,16 +1,13 @@
 # SociaLens - Social Media Microservice Backend
 
-A production-ready social media platform built with microservice architecture, featuring user management, media uploads, ticketing system, and real-time notifications.
+A production-ready social media platform built with microservice architecture, featuring user management, email notifications, and API gateway.
 
 ## 🌟 Features
 
 - **Microservice Architecture**: Scalable and maintainable service separation
 - **Advanced Authentication**: JWT + TOTP (Google Authenticator) support
 - **Role-Based Access Control**: Hierarchical permission system
-- **Real-time Notifications**: WebSocket-based instant messaging
-- **Media Management
-  **: AWS S3 integration for file uploads
-- **Ticketing System**: Built-in support ticket management
+- **Email Notifications**: SMTP-based email notifications with templates
 - **API Gateway**: Centralized request routing and load balancing
 - **Comprehensive Testing**: Jest test suites with coverage reporting
 - **Security First**: Rate limiting, input validation, and secure headers
@@ -44,7 +41,7 @@ Client Roles:
 ### 2. **Notification Service** (Port 5004)
 
 - **Email Notifications** (SMTP integration)
-- **Event Processing** (RabbitMQ/Redis pub-sub)
+- **Event Processing** (RabbitMQ pub-sub)
 - **Invitation Email Templates**
 - **Delivery Status Tracking**
 
@@ -89,12 +86,10 @@ backend/
 │   │   │   ├── queues/         # Background job queues
 │   │   │   └── utils/          # Utility functions
 │   │   └── generated/          # Prisma client
-│   ├── media-service/          # File Upload & Posts
-│   ├── ticketing-service/      # Support Tickets
-│   └── notification-service/   # Real-time Notifications
+│   ├── ticketing-service/      # Support Tickets (placeholder)
+│   └── notification-service/   # Email Notifications
 ├── shared/                     # Common utilities & configurations
-│   ├── utils/                  # Shared utilities
-│   └── middleware/             # Shared middleware
+│   └── utils/                  # Shared utilities
 ├── gateway/                    # API Gateway
 │   ├── src/
 │   │   ├── routes/             # Gateway routes
@@ -108,7 +103,7 @@ backend/
 
 - Node.js 18+
 - MySQL 8.0
-- Redis 7
+- RabbitMQ
 - Git
 
 ### Development Setup
@@ -122,10 +117,7 @@ backend/
 
 2. **Environment Configuration**
 
-   ```bash
-   cp .env.example .env
-   # Edit .env with your configuration
-   ```
+   Create a `.env` file in the root directory with your configuration.
 
 3. **Database Setup**
 
@@ -149,14 +141,8 @@ backend/
 4. **Start Development Environment**
 
    ```bash
-   # Start all services with PM2 (recommended)
-   npm install -g pm2
-   pm2 start ecosystem.config.js
-
-   # Or start individual services manually
+   # Start services individually
    cd services/user-service && npm run dev &
-   cd ../media-service && npm run dev &
-   cd ../ticketing-service && npm run dev &
    cd ../notification-service && npm run dev &
    cd ../../gateway && npm run dev &
    ```
@@ -165,8 +151,6 @@ backend/
    - **API Gateway**: http://localhost:5000
    - **Swagger Docs**: http://localhost:5000/api-docs
    - **User Service**: http://localhost:5001
-   - **Media Service**: http://localhost:5002
-   - **Ticketing Service**: http://localhost:5003
    - **Notification Service**: http://localhost:5004
 
 ## 🔧 Development Commands
@@ -195,7 +179,7 @@ npm run test:watch    # Run tests in watch mode
 - **TOTP (Google Authenticator)** support
 - **Password Hashing** with Argon2id
 - **Rate Limiting** on all endpoints
-- **Input Validation** with Joi
+- **Input Validation** with Zod
 - **CORS Protection**
 - **Helmet Security Headers**
 - **SQL Injection Prevention**
@@ -203,7 +187,6 @@ npm run test:watch    # Run tests in watch mode
 ## 📊 API Documentation
 
 - **Swagger UI**: http://localhost:5000/api-docs
-- **Postman Collection**: Available in `/docs` folder
 
 ## 🧪 Testing
 
@@ -221,48 +204,11 @@ npm run test:coverage
 
 ## 📈 Monitoring & Logging
 
-- **Winston** for structured logging across all services
-- **Morgan** for HTTP request logging with Pino integration
+- **Pino** for structured logging across all services
 - **Health checks** for all services (`/health` endpoints)
 - **Error tracking** with detailed stack traces
 - **Performance monitoring** with response time tracking
 - **Log aggregation** for centralized monitoring
-
-## 🔄 CI/CD Pipeline
-
-- **Pre-commit hooks** with Husky for code quality
-- **ESLint** for JavaScript code linting
-- **Prettier** for consistent code formatting
-- **Jest** automated testing with coverage reporting
-- **GitHub Actions** for automated testing and deployment
-- **Docker** containerization for all services
-- **Kubernetes** orchestration for production deployment
-
-## 🐳 Docker Deployment
-
-### Development with Docker Compose
-
-```bash
-# Start all services
-docker-compose up -d
-
-# View logs
-docker-compose logs -f
-
-# Stop services
-docker-compose down
-```
-
-### Production Deployment
-
-```bash
-# Build production images
-docker build -t socialens-user-service ./services/user-service
-docker build -t socialens-gateway ./gateway
-
-# Run with Kubernetes
-kubectl apply -f k8s/
-```
 
 ## 🔍 API Endpoints Overview
 
@@ -345,7 +291,7 @@ client_admin > client_user;
 - **Authentication**: JWT verification from headers or cookies
 - **Authorization**: Role-based route protection
 - **Validation**: Input sanitization with Zod schemas
-- **Rate Limiting**: IP-based request throttling
+- **Rate Limiting**: Request throttling
 
 ## 🏗️ API Architecture
 
@@ -404,7 +350,7 @@ src/
 
 - **Helmet**: Security headers and CSP policies
 - **CORS**: Configurable cross-origin resource sharing
-- **Rate Limiting**: Distributed rate limiting with Redis
+- **Rate Limiting**: Request throttling
 - **Input Validation**: Comprehensive input sanitization
 
 ### Session Management
@@ -415,13 +361,12 @@ src/
 
 ## 📝 Environment Variables
 
-See `.env.example` for all required environment variables:
+Create a `.env` file in the root directory with the following variables:
 
 - Database configuration
 - JWT secrets
-- AWS credentials
 - Email settings
-- Redis configuration
+- RabbitMQ configuration
 - Security settings
 
 ## 🤝 Contributing
@@ -434,7 +379,7 @@ See `.env.example` for all required environment variables:
 
 ## 📄 License
 
-MIT License - see LICENSE file for details
+MIT License
 
 ## 🆘 Support
 
@@ -444,5 +389,3 @@ For support and questions:
 - Contact: support@socialens.com
 
 ---
-
-**Built with ❤️ by Minfy Technologies**
