@@ -5,6 +5,8 @@ import helmet from 'helmet';
 import morgan from 'morgan';
 import compression from 'compression';
 import rateLimit from 'express-rate-limit';
+import { createProxyMiddleware } from 'http-proxy-middleware';
+import { swaggerUi, swaggerSpec } from './gateway/src/swagger.js';
 import logger from './shared/utils/logger.js';
 
 dotenv.config();
@@ -61,6 +63,9 @@ app.use(
 // Body parsing middleware
 app.use(express.json({ limit: '10mb' }));
 
+// Swagger API Documentation
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+
 // Health check endpoint
 app.get('/health', (req, res) => {
   res.status(200).json({
@@ -73,6 +78,22 @@ app.get('/health', (req, res) => {
 app.get('/', (req, res) => {
   res.send('hey there from backend');
 });
+
+// Proxy /api requests to user-service
+app.use(
+  '/api',
+  createProxyMiddleware({
+    target: 'http://localhost:5001',
+    changeOrigin: true,
+    pathRewrite: {
+      '^/api': '', // remove /api prefix when forwarding to user-service
+    },
+    onError: (err, req, res) => {
+      logger.error('Proxy error:', err);
+      res.status(500).json({ error: 'Service unavailable' });
+    },
+  })
+);
 
 // Global error handler (kept in root app for non-user-service endpoints)
 app.use((err, req, res, _next) => {
@@ -97,4 +118,7 @@ const PORT = process.env.PORT || 5000;
 
 app.listen(PORT, () => {
   logger.info(`Server running on port ${PORT}`);
+  logger.info(
+    `API Documentation available at http://localhost:${PORT}/api-docs`
+  );
 });

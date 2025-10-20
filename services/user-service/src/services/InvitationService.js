@@ -2,6 +2,7 @@ import { randomUUID } from 'crypto';
 import prisma from '../config/prisma.js';
 import { hashPassword } from '../utils/password.js';
 import { publishEvent } from '../queues/emailQueue.js';
+import speakeasy from 'speakeasy';
 
 const DEFAULT_INVITE_TTL_HOURS = Number(process.env.INVITE_TTL_HOURS || 48);
 
@@ -57,7 +58,7 @@ export class InvitationService {
     return { id: invitation.id, token, expiresAt };
   }
 
-  static async acceptInvitation({ token, password }) {
+  static async acceptInvitation({ token, password, firstName, lastName }) {
     return await prisma.$transaction(async tx => {
       const invite = await tx.invitation.findUnique({ where: { token } });
       if (!invite) throw new Error('Invitation not found');
@@ -89,6 +90,8 @@ export class InvitationService {
       const user = await tx.user.create({
         data: {
           email: invite.email,
+          firstName,
+          lastName,
           passwordHash,
           passwordAlgo,
           role: invite.role,
@@ -96,6 +99,11 @@ export class InvitationService {
           invitedBy: invite.invitedBy,
           status: 'active',
           emailVerified: true,
+          totpEnabled: invite.authType === 'totp',
+          totpSecret:
+            invite.authType === 'totp'
+              ? speakeasy.generateSecret().base32
+              : null,
         },
       });
 

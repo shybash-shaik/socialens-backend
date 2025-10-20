@@ -1,5 +1,5 @@
 import prisma from '../../config/prisma.js';
-import { RefreshTokenRepository } from '../../domain/repositories/RefreshTokenRpository.js';
+import { RefreshTokenRepository } from '../../domain/repositories/RefreshTokenRepository.js';
 
 export class PrismaRefreshTokenRepository extends RefreshTokenRepository {
   async create(data) {

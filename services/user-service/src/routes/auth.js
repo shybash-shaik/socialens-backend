@@ -27,6 +27,9 @@ router.post('/login', validate(loginSchema), AuthController.login);
 router.post('/refresh', validate(refreshSchema), AuthController.refresh);
 router.post('/logout', validate(refreshSchema), AuthController.logout);
 
+// Get current user details
+router.get('/user-details', authenticate, AuthController.getUserDetails);
+
 // TOTP: generate/setup secret for current user (must be authenticated)
 router.post('/totp/setup', authenticate, async (req, res, next) => {
   try {

@@ -31,13 +31,18 @@ export class AuthService {
 
     // If TOTP is enabled, verify provided OTP before issuing tokens
     if (user.totpEnabled) {
+      if (!otp) {
+        throw UnauthorizedError('OTP_REQUIRED');
+      }
       const isValidOtp = speakeasy.totp.verify({
         secret: user.totpSecret,
         encoding: 'base32',
-        token: otp || '',
+        token: otp,
         window: 1,
       });
-      if (!isValidOtp) throw UnauthorizedError('OTP_REQUIRED_OR_INVALID');
+      if (!isValidOtp) {
+        throw UnauthorizedError('INVALID_OTP');
+      }
     }
 
     // Generate JWT access and refresh tokens
@@ -66,6 +71,7 @@ export class AuthService {
         email: user.email,
         role: user.role,
         tenantId: user.tenantId,
+        totpEnabled: user.totpEnabled,
       },
       tokens: { accessToken, refreshToken },
     };

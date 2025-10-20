@@ -29,15 +29,15 @@ app.use(
   })
 );
 
-/* 🌐 CORS Configuration: env-driven allowlist */
-app.use(
-  cors({
-    origin: process.env.ALLOWED_ORIGINS?.split(',') || [
-      'http://localhost:3000',
-    ],
-    credentials: true,
-  })
-);
+// /* 🌐 CORS Configuration: env-driven allowlist */
+// app.use(
+//   cors({
+//     origin: process.env.ALLOWED_ORIGINS?.split(',') || [
+//       'http://localhost:3000',
+//     ],
+//     credentials: true,
+//   })
+// );
 
 /* 🚦 Rate Limiting: global IP throttling */
 const limiter = rateLimit({
