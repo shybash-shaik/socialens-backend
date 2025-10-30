@@ -1,6 +1,6 @@
-# SociaLens - Social Media Microservice Backend
+# SociaLens
 
-A production-ready social media platform built with microservice architecture, featuring user management, email notifications, and API gateway.
+A social media platform built with microservice architecture, featuring user management, email notifications, and API gateway.
 
 ## Features
 
@@ -24,20 +24,36 @@ A production-ready social media platform built with microservice architecture, f
 
 **Role Hierarchy:**
 
-```
-Admin Roles:
-├── Super Admin (can create Site Admin & Operator)
-│   ├── Site Admin (can create Operator)
-│   │   └── Operator (limited admin access)
-│   └── Operator (limited admin access)
-└── Operator (limited admin access)
+### **Admin Roles**
 
-Client Roles:
-├── Client Admin (invited by Super Admin)
-│   └── Client User (invited by Client Admin)
-└── Client User (invited by Client Admin)
-```
+1. **Super Admin**
 
+   * Has the highest level of access.
+   * Can create **Site Admins** and **Operators**.
+
+2. **Site Admin**
+
+   * Created by the **Super Admin**.
+   * Can create **Operators** under their site.
+
+3. **Operator**
+
+   * Has **limited admin access**.
+   * Can be created either by a **Super Admin** or a **Site Admin**.
+
+### **Client Roles**
+
+1. **Client Admin**
+
+   * Invited by the **Super Admin**.
+   * Can invite and manage **Client Users**.
+
+2. **Client User**
+
+   * Invited and managed by a **Client Admin**.
+   * Has limited client-level acces
+
+   
 ### 2. **Notification Service** (Port 5004)
 
 - **Email Notifications** (SMTP integration)
@@ -49,53 +65,22 @@ Client Roles:
 
 - **Request Routing**
 - **Load Balancing**
-- **Authentication Middleware**
 - **Request Logging**
 - **CORS Configuration**
 - **Health Checks**
 
-## Technology Stack
+### **Technology Stack**
 
-| Component            | Technology        |
-| -------------------- | ----------------- |
-| **Runtime**          | Node.js 18+       |
-| **Framework**        | Express.js        |
-| **Database**         | MySQL 8.0         |
-| **ORM**              | Prisma            |
-| **Authentication**   | JWT + TOTP        |
-| **Password Hashing** | Argon2id + BCrypt |
-| **Message Queue**    | RabbitMQ          |
-| **Logging**          | Pino              |
-| **Validation**       | Zod               |
-| **Security**         | Helmet + CORS     |
-
-## Project Structure
-
-```
-backend/
-├── services/
-│   ├── user-service/           # Authentication & User Management
-│   │   ├── prisma/             # Database schema & migrations
-│   │   ├── src/
-│   │   │   ├── adapters/       # Repository implementations
-│   │   │   ├── controllers/    # Route handlers
-│   │   │   ├── domain/         # Business logic & entities
-│   │   │   ├── middleware/     # Express middleware
-│   │   │   ├── routes/         # API routes
-│   │   │   ├── services/       # Application services
-│   │   │   ├── queues/         # Background job queues
-│   │   │   └── utils/          # Utility functions
-│   │   └── generated/          # Prisma client
-│   ├── ticketing-service/      # Support Tickets (placeholder)
-│   └── notification-service/   # Email Notifications
-├── shared/                     # Common utilities & configurations
-│   └── utils/                  # Shared utilities
-├── gateway/                    # API Gateway
-│   ├── src/
-│   │   ├── routes/             # Gateway routes
-│   │   └── middleware/         # Gateway middleware
-└── README.md
-```
+* **Runtime:** Node.js 18+
+* **Framework:** Express.js
+* **Database:** MySQL 8.0
+* **ORM:** Prisma
+* **Authentication:** JWT + TOTP
+* **Password Hashing:** Argon2id + BCrypt
+* **Message Queue:** RabbitMQ
+* **Logging:** Pino
+* **Validation:** Zod
+* **Security:** Helmet + CORS
 
 ## Quick Start
 
@@ -268,8 +253,7 @@ The application uses **Prisma ORM** with **MySQL 8.0** for data persistence. Key
 - **Access Tokens**: Short-lived (15 minutes) for API access
 - **Refresh Tokens**: Long-lived (7 days) for token renewal
 - **Token Rotation**: Automatic refresh token rotation on use
-- **Cookie Support**: HTTP-only cookies for web clients
-
+- 
 ### Two-Factor Authentication (TOTP)
 
 - **Google Authenticator**: QR code generation for setup
@@ -278,7 +262,7 @@ The application uses **Prisma ORM** with **MySQL 8.0** for data persistence. Key
 
 ### Role-Based Access Control
 
-```javascript
+```
 // Platform roles (highest to lowest)
 super_admin > site_admin > operator;
 
@@ -293,23 +277,6 @@ client_admin > client_user;
 - **Validation**: Input sanitization with Zod schemas
 - **Rate Limiting**: Request throttling
 
-## API Architecture
-
-### Clean Architecture Pattern
-
-```
-src/
-├── adapters/          # Repository implementations (Prisma)
-├── controllers/       # HTTP request handlers
-├── domain/           # Business logic & entities
-│   ├── services/     # Application services
-│   └── repositories/ # Repository interfaces
-├── middleware/       # Express middleware
-├── routes/          # API route definitions
-├── services/        # Domain services
-├── queues/          # Message queue handlers
-└── utils/           # Utility functions
-```
 
 ### Service Communication
 
